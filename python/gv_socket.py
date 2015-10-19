@@ -1,13 +1,21 @@
 import os
 import socket
+import struct
 import time
 import pylibgv
+
+
+def htons(port):
+    return socket.htons(port)
+
+def ntohs(port):
+    return socket.ntohs(port)
 
 class gv_socket(object):
     def __init__(self):
 	self.so_data = socket.socket(socket.AF_UNIX,socket.SOCK_STREAM)
 	self.so_ctrl = socket.socket(socket.AF_UNIX,socket.SOCK_STREAM)
-	self.local_address = self.__localaddr()
+	self.local_address = self.__localaddrunix()
 	self.local_addr    = 0
 	self.local_port    = 0
 	self.local_vport   = 0
@@ -20,8 +28,21 @@ class gv_socket(object):
 	    pass
 
 	self.so_ctrl.connect("/dev/gaver")
+    
+    def ip2long(self,ip):
+	'''
+        Convert an IP string to long
+	'''
+	packedIP = socket.inet_aton(ip)
+        return socket.htonl(struct.unpack("!L", packedIP)[0])
 
-    def __localaddr(self):
+    def long2ip(self, ip):
+	'''
+        Convert an Long to IP string
+	'''
+	return socket.inet_ntoa(struct.pack('!L',socket.ntohl(ip)))
+
+    def __localaddrunix(self):
 	'''
 	    General la direccion local del server unix
 	'''
@@ -32,23 +53,42 @@ class gv_socket(object):
 	    return lua
 
     def connect(self, addr, port, vport):
-	return self.gvapi.connect(addr,port,vport,self.local_address)
-
-    def getsockname(self):
-	return (self.local_addr,self.local_port,self.local_vport)
-
-    def bind(self, addr, port, vport):
-	if addr == 0 and port == 0:
-	    try:
-		(addr,port,vport) = self.gvapi.bind(addr,port,vport)
-		self.local_addr = addr
-		self.local_port = port
-		self.local_vport = vport
-	    except:
-		pass
+	'''
+	    Connect Method
+	'''
+	if isinstance(addr,str):
+	    haddr = self.ip2long(addr)
 	else:
-	    raise Exception
+	    raise ValueError("addr must be a string type")
 	
+	try:
+	    return self.gvapi.connect(haddr,
+				  htons(port),
+				  htons(vport),
+				  self.local_address)
+	except:
+	    pass
+    
+    def bind(self, vport):
+	'''
+	    Bind Method
+	'''
+	print type(vport)
+	(addr,port,v) = self.gvapi.bind(0,0,vport)
+    	self.local_addr  = addr
+    	self.local_port  = port
+    	self.local_vport = v
+	
+	
+    def getsockname(self):
+	'''
+	    Get the local address
+	'''
+	return (self.long2ip(self.local_addr),
+		ntohs(self.local_port),
+		ntohs(self.local_vport))
+
 x = gv_socket()
 print x.local_address
-x.bind(1222,1,1)
+x.bind(200)
+print x.getsockname()

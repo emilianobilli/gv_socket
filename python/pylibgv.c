@@ -188,6 +188,7 @@ pylibgv_bind(pylibgvObject *self, PyObject *args)
     errno = 0;
     if (gv_bind_api_msg(self->socket, &addr, &port, &vport)==-1)
     {
+	printf("%d\n", addr);
 	if (gv_errno == OSERROR)
 	{
 	    /* 
@@ -204,7 +205,7 @@ pylibgv_bind(pylibgvObject *self, PyObject *args)
 	}
 	return NULL;
     }
-    return Py_BuildValue("(lhh)",&addr,&port,&vport);
+    return Py_BuildValue("(lHH)",addr,port,vport);
 }
 
 
