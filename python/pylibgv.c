@@ -175,6 +175,7 @@ pylibgv_accept(pylibgvObject *self, PyObject *args)
 static PyObject *
 pylibgv_bind(pylibgvObject *self, PyObject *args)
 {
+    int ret;
     u_int32_t addr;
     u_int16_t port;
     u_int16_t vport;

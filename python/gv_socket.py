@@ -19,6 +19,8 @@ class gv_socket(object):
 	    # ToDo raise exceptions
 	    pass
 
+	self.so_ctrl.connect("/dev/gaver")
+
     def __localaddr(self):
 	'''
 	    General la direccion local del server unix
@@ -32,9 +34,21 @@ class gv_socket(object):
     def connect(self, addr, port, vport):
 	return self.gvapi.connect(addr,port,vport,self.local_address)
 
+    def getsockname(self):
+	return (self.local_addr,self.local_port,self.local_vport)
+
     def bind(self, addr, port, vport):
-	
+	if addr == 0 and port == 0:
+	    try:
+		(addr,port,vport) = self.gvapi.bind(addr,port,vport)
+		self.local_addr = addr
+		self.local_port = port
+		self.local_vport = vport
+	    except:
+		pass
+	else:
+	    raise Exception
 	
 x = gv_socket()
 print x.local_address
-x.connect(1222,1,1)
+x.bind(1222,1,1)
