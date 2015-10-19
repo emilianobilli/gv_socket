@@ -102,7 +102,7 @@ pylibgv_connect(pylibgvObject *self, PyObject *args)
     u_int16_t vport;
     char *path;
 
-    if (!PyArg_ParseTuple(args,"iiis",&addr,&port,&vport, &path)) 
+    if (!PyArg_ParseTuple(args,"lhhs",&addr,&port,&vport, &path)) 
     {
 	PyErr_SetString(PyExc_AttributeError, "Error in arguments");
 	return NULL;
@@ -141,7 +141,7 @@ pylibgv_accept(pylibgvObject *self, PyObject *args)
     u_int16_t vport;
     char *path;
 
-    if (!PyArg_ParseTuple(args,"iiis",&addr,&port,&vport, &path)) 
+    if (!PyArg_ParseTuple(args,"lhhs",&addr,&port,&vport, &path)) 
     {
 	PyErr_SetString(PyExc_AttributeError, "Error in arguments");
 	return NULL;
@@ -168,7 +168,7 @@ pylibgv_accept(pylibgvObject *self, PyObject *args)
 	}
 	return NULL;
     }
-    Py_RETURN_TRUE;
+    return Py_BuildValue("(lhh)",&addr,&port,&vport);
 }
 
 
@@ -179,7 +179,7 @@ pylibgv_bind(pylibgvObject *self, PyObject *args)
     u_int16_t port;
     u_int16_t vport;
 
-    if (!PyArg_ParseTuple(args,"iii",&addr,&port,&vport)) 
+    if (!PyArg_ParseTuple(args,"lhh",&addr,&port,&vport)) 
     {
 	PyErr_SetString(PyExc_AttributeError, "Error in arguments");
 	return NULL;
@@ -203,7 +203,7 @@ pylibgv_bind(pylibgvObject *self, PyObject *args)
 	}
 	return NULL;
     }
-    Py_RETURN_TRUE;
+    return Py_BuildValue("(lhh)",&addr,&port,&vport);
 }
 
 
@@ -260,7 +260,7 @@ static PyTypeObject pylibgvType = {
     0,                         /* tp_dictoffset */
     (initproc)pylibgv_init,     /* tp_init */
     0,                         /* tp_alloc */
-    pylibgv_new,                /* tp_new */
+    (newfunc)pylibgv_new,                /* tp_new */
 };
 
 
