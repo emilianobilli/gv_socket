@@ -102,7 +102,7 @@ pylibgv_connect(pylibgvObject *self, PyObject *args)
     u_int16_t vport;
     char *path;
 
-    if (!PyArg_ParseTuple(args,"lhhs",&addr,&port,&vport, &path)) 
+    if (!PyArg_ParseTuple(args,"lHHs",&addr,&port,&vport,&path)) 
     {
 	PyErr_SetString(PyExc_AttributeError, "Error in arguments");
 	return NULL;
@@ -134,18 +134,19 @@ pylibgv_connect(pylibgvObject *self, PyObject *args)
 
 
 static PyObject *
-pylibgv_accept(pylibgvObject *self, PyObject *args)
+pylibgv_accept(pylibgvObject *self, PyObject *local_path)
 {
-    u_int32_t addr;
-    u_int16_t port;
-    u_int16_t vport;
+    u_int32_t addr  = 0;
+    u_int16_t port  = 0;
+    u_int16_t vport = 0;
     char *path;
 
-    if (!PyArg_ParseTuple(args,"lhhs",&addr,&port,&vport, &path)) 
+    if (!PyString_Check(local_path)) 
     {
 	PyErr_SetString(PyExc_AttributeError, "Error in arguments");
 	return NULL;
     }
+    path = PyString_AsString(local_path);
     /*
      * ToDo test len of path
      */
@@ -168,27 +169,25 @@ pylibgv_accept(pylibgvObject *self, PyObject *args)
 	}
 	return NULL;
     }
-    return Py_BuildValue("(lhh)",&addr,&port,&vport);
+    return Py_BuildValue("(lHH)",&addr,&port,&vport);
 }
 
 
 static PyObject *
 pylibgv_bind(pylibgvObject *self, PyObject *args)
 {
-    int ret;
     u_int32_t addr;
     u_int16_t port;
     u_int16_t vport;
 
-    if (!PyArg_ParseTuple(args,"lhh",&addr,&port,&vport)) 
+    if (!PyArg_ParseTuple(args,"lHH",&addr,&port,&vport)) 
     {
-	PyErr_SetString(PyExc_AttributeError, "Error in arguments");
+	PyErr_SetString(PyExc_AttributeError, "Error in arguements");
 	return NULL;
     }
     errno = 0;
     if (gv_bind_api_msg(self->socket, &addr, &port, &vport)==-1)
     {
-	printf("%d\n", addr);
 	if (gv_errno == OSERROR)
 	{
 	    /* 
