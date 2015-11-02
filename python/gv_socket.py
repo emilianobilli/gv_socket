@@ -1,4 +1,5 @@
 import os
+import json
 import socket
 import struct
 import time
@@ -12,15 +13,36 @@ def ntohs(port):
     return socket.ntohs(port)
 
 
+AF_GAVER=0
+SOCK_STREAM=socket.SOCK_STREAM
+
+
 class GaVerError(Exception):
     def __init__(self, value, critical=False):
 	self.value    = value
 	self.critical = critical
     def __str__(self):
-	return repr(self.value)
+	return str(self.value)
+    def __repr__(self):
+	return self.value
+
+
+
+
+
+#
+# try:
+#     sock = gv_socket.gv_socket(gv_socket.AF_GAVER, gv_socket.SOCK_STREAM)
+# except GaVerError as e:
+#     print e
 
 class gv_socket(object):
-    def __init__(self):
+    def __init__(self, afamily, stype):
+	if afamily != AF_GAVER:
+	    raise GaVerError('Wrong Address Family, use AF_GAVER')
+	if stype != SOCK_STREAM:
+	    raise GaVerError('Wrock Socket Type, use SOCK_STREAM')
+
 	self.so_data = socket.socket(socket.AF_UNIX,socket.SOCK_STREAM)
 	self.so_ctrl = socket.socket(socket.AF_UNIX,socket.SOCK_STREAM)
 	self.local_address = self.__localaddrunix()
@@ -31,6 +53,7 @@ class gv_socket(object):
 	self.remote_port   = 0
 	self.remote_vport  = 0
 	self.gv_kernel     = self.getgvdev()
+	self.gv_kernel_ver = ''
 
 	if self.gv_kernel is None:
 	    raise GaVerError('Enviroment: [%s] not found' % 'GV_KERNEL_DEV')
@@ -44,6 +67,13 @@ class gv_socket(object):
 
 	try:
 	    self.so_ctrl.connect(self.gv_kernel)
+	    js = json.loads(self.so_ctrl.recv(512))
+	    if js['Status'] != 'Ok':
+		self.so_ctrl.close()
+		raise GaVerError('Kernel Error: %s' % (js['Reason']))
+	    else:
+		self.gv_kernel_ver = js['Gaver']
+
 	except socket.error as e:   
 	    raise GaVerError('Kernel Socket (%s) -> %s' % (self.gv_kernel,str(e)))
 
@@ -70,7 +100,7 @@ class gv_socket(object):
 
     def __localaddrunix(self):
 	'''
-	    General la direccion local del server unix
+	    Genera la direccion local del server unix
 	'''
 	lua = "%s_%s.unix" % (str(os.getpid()),str(time.time()))
 	if os.path.isfile("/tmp/%s" % lua):
@@ -133,8 +163,42 @@ class gv_socket(object):
 		ntohs(self.local_port),
 		ntohs(self.local_vport))
 
+    def listen(self):
+	'''
+	    Listen Method
+	'''
+	try:
+	    self.gvapi.listen(0)
+	except IOError as e:
+	    raise GaVerError('IOError: %s' % str(e))
+	except AttributeError as e:
+	    raise GaVerError('AttributeError: %s' % str(e))
 
-x = gv_socket()
-print x.getgvdev()
-print x.local_address
-print x.getsockname()
+    def setsockopt(self):
+	'''
+	    SetSockOpt Method
+	'''
+	pass
+    def getsockopt(self):
+	'''
+	    GetSockOpt Method
+	'''
+	pass
+
+    def send(self, buffer):
+	'''
+	    Send Method
+	'''
+	return self.so_data.send(buffer)
+
+    def recv(self, size):
+	'''
+	    Recv Method
+	'''
+	return self.so_data.recv(size)
+
+try:
+    x = gv_socket(AF_GAVER,SOCK_STREAM)
+except GaVerError as e:
+    print e
+    
