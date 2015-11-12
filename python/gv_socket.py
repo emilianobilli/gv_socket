@@ -127,7 +127,7 @@ class gv_socket(object):
 	    raise
 
 	try:
-	    tmpsocket = self.so_data.accept()
+	    tmpsocket, addr = self.so_data.accept()
 	except socket.error as e:
 	    raise GaVerError('Kernel Data Connection -> %s' % str(e))
     
