@@ -68,7 +68,7 @@ class gv_socket(object):
 	try:
 	    self.so_ctrl.connect(self.gv_kernel)
 	    js = json.loads(self.so_ctrl.recv(512))
-	    if js['Status'] != 'Ok':
+	    if int(js['Status']) == -1:
 		self.so_ctrl.close()
 		raise GaVerError('Kernel Error: %s' % (js['Reason']))
 	    else:
@@ -199,6 +199,7 @@ class gv_socket(object):
 
 try:
     x = gv_socket(AF_GAVER,SOCK_STREAM)
+    x.bind(300)
 except GaVerError as e:
     print e
     
