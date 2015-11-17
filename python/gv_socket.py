@@ -103,6 +103,9 @@ class gv_socket(object):
 	    Genera la direccion local del server unix
 	'''
 	lua = "%s_%s.unix" % (str(os.getpid()),str(time.time()))
+	#
+	# Pequeo bug, el socket unix no se genera donde debe
+	#
 	if os.path.isfile("/tmp/%s" % lua):
 	    return None
 	else:
@@ -150,7 +153,7 @@ class gv_socket(object):
     	    self.local_port  = port
     	    self.local_vport = vport
 	except IOError as e:
-	    raise GaVerError('IOError: %s' % str(e))
+	    raise GaVerError('GaVer Socket: %s' % str(e))
 	except AttributeError as e:
 	    raise GaVerError('AttributeError: %s' % str(e))
 
@@ -170,7 +173,7 @@ class gv_socket(object):
 	try:
 	    self.gvapi.listen(0)
 	except IOError as e:
-	    raise GaVerError('IOError: %s' % str(e))
+	    raise GaVerError('GaVer Socket: %s' % str(e))
 	except AttributeError as e:
 	    raise GaVerError('AttributeError: %s' % str(e))
 
@@ -199,7 +202,7 @@ class gv_socket(object):
 
 try:
     x = gv_socket(AF_GAVER,SOCK_STREAM)
-    x.bind(300)
+    x.listen()
 except GaVerError as e:
     print e
     

@@ -86,7 +86,7 @@ pylibgv_listen(pylibgvObject *self, PyObject *arg)
 	    /*
              * ToDo change for gv error
              */
-	    PyErr_SetString(PyExc_IOError, "Gv Kernel Error");
+	    PyErr_SetString(PyExc_IOError, strerror(gv_errno));
 	}
 	return NULL;
     }
@@ -125,7 +125,7 @@ pylibgv_connect(pylibgvObject *self, PyObject *args)
 	    /*
              * ToDo change for gv error
              */
-	    PyErr_SetString(PyExc_IOError, "Gv Kernel Error");
+	    PyErr_SetString(PyExc_IOError, strerror(gv_errno));
 	}
 	return NULL;
     }
@@ -165,7 +165,7 @@ pylibgv_accept(pylibgvObject *self, PyObject *local_path)
 	    /*
              * ToDo change for gv error
              */
-	    PyErr_SetString(PyExc_IOError, "Gv Kernel Error");
+	    PyErr_SetString(PyExc_IOError, strerror(gv_errno));
 	}
 	return NULL;
     }
@@ -200,7 +200,7 @@ pylibgv_bind(pylibgvObject *self, PyObject *args)
 	    /*
              * ToDo change for gv error
              */
-	    PyErr_SetString(PyExc_IOError, "Gv Kernel Error");
+	    PyErr_SetString(PyExc_IOError, strerror(gv_errno));
 	}
 	return NULL;
     }
