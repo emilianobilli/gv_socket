@@ -202,6 +202,7 @@ class gv_socket(object):
 
 try:
     x = gv_socket(AF_GAVER,SOCK_STREAM)
+    x.bind(12)
     x.listen()
 except GaVerError as e:
     print e
