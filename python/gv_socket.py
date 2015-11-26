@@ -42,10 +42,6 @@ class GaVerError(Exception):
     def __repr__(self):
 	return self.value
 
-
-
-
-
 #
 # try:
 #     sock = gv_socket.gv_socket(gv_socket.AF_GAVER, gv_socket.SOCK_STREAM)
@@ -173,6 +169,18 @@ class gv_socket(object):
 	except AttributeError as e:
 	    raise GaVerError('AttributeError: %s' % str(e))
 
+    def setsockspeed(self, value):
+	'''
+	    Set the socket speed
+	'''
+	pass
+
+    def getsockspeed(self):
+	'''
+	    Get the socket configured speed
+	'''
+	pass
+
 
     def getsockname(self):
 	'''
@@ -192,17 +200,6 @@ class gv_socket(object):
 	    raise GaVerError('GaVer Socket: %s' % str(e))
 	except AttributeError as e:
 	    raise GaVerError('AttributeError: %s' % str(e))
-
-    def setsockopt(self):
-	'''
-	    SetSockOpt Method
-	'''
-	pass
-    def getsockopt(self):
-	'''
-	    GetSockOpt Method
-	'''
-	pass
 
     def send(self, buffer):
 	'''
