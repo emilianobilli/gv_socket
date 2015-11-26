@@ -16,7 +16,7 @@ import gv_socket
 
 sk = gv_socket.gv_socket(gv_socket.AF_INET, gv_socket.SOCK_STREAM)
 
-sk.bind ("0.0.0.0", 3000, 121)
+sk.bind (121)
 
 sk.listen()
 
