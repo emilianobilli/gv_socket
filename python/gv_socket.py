@@ -115,13 +115,10 @@ class gv_socket(object):
 	    Genera la direccion local del server unix
 	'''
 	lua = "%s_%s.unix" % (str(os.getpid()),str(time.time()))
-	#
-	# Pequeo bug, el socket unix no se genera donde debe
-	#
 	if os.path.isfile("/tmp/%s" % lua):
 	    return None
 	else:
-	    return lua
+	    return '/tmp/%s' % lua
 
     def connect(self, addr, port, vport):
 	'''
@@ -131,7 +128,6 @@ class gv_socket(object):
 	    haddr = self.ip2long(addr)
 	else:
 	    raise GaVerError('ValueError: %s' % 'addr must be a string type')
-	
 	try:
 	    self.gvapi.connect(haddr,htons(port),htons(vport), self.local_address)
 	except IOError as e:
@@ -215,8 +211,8 @@ class gv_socket(object):
 
 try:
     x = gv_socket(AF_GAVER,SOCK_STREAM)
-    x.bind(12)
-    x.listen()
+    x.bind(1221)
+    x.connect('1.1.1.1', 2000,12)
 except GaVerError as e:
     print e
     
