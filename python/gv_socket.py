@@ -120,6 +120,32 @@ class gv_socket(object):
 	else:
 	    return '/tmp/%s' % lua
 
+    def accept(self):
+	'''
+	    Accept Method
+	'''
+	try:
+	    self.gvapi.accept(self.local_address)
+	except IOError as e:
+	    raise GaVerError('IOError: %s' % str(e))
+	except AttributeError as e:
+	    raise GaVerError('AttributeError: %s' % str(e))
+	except:
+	    raise
+
+	try:
+	    tmpsocket, addr = self.so_data.accept()
+	except socket.error as e:
+	    raise GaVerError('Kernel Data Connection -> %s' % str(e))
+    
+	self.so_data.close()
+	self.so_data = tmpsocket
+	
+	self.remote_addr  = haddr
+	self.remote_port  = htons(port)
+	self.remote_vport = htons(vport)
+
+
     def connect(self, addr, port, vport):
 	'''
 	    Connect Method
@@ -209,10 +235,3 @@ class gv_socket(object):
 	'''
 	return self.so_data.recv(size)
 
-try:
-    x = gv_socket(AF_GAVER,SOCK_STREAM)
-    x.bind(1221)
-    x.connect('1.1.1.1', 2000,12)
-except GaVerError as e:
-    print e
-    

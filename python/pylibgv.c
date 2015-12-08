@@ -158,7 +158,7 @@ pylibgv_accept(pylibgvObject *self, PyObject *local_path)
     u_int16_t vport = 0;
     char *path;
 
-    if (!PyString_Check(local_path)) 
+    if (! PyString_Check(local_path)) 
     {
 	PyErr_SetString(PyExc_AttributeError, "Error in arguments");
 	return NULL;
@@ -234,7 +234,7 @@ static PyMethodDef pylibgv_methods[] = {
     {"listen",	(PyCFunction)pylibgv_listen,  METH_O,       "Listen"},
     {"set",	(PyCFunction)pylibgv_set,  METH_O,          "Set Socket"},
     {"bind",	(PyCFunction)pylibgv_bind,    METH_VARARGS, "Bind"},	
-    {"accept",	(PyCFunction)pylibgv_accept,  METH_VARARGS, "Accept"},
+    {"accept",	(PyCFunction)pylibgv_accept,  METH_O, "Accept"},
     {NULL}
 };
 
