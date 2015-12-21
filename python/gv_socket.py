@@ -91,6 +91,7 @@ class gv_socket(object):
 
 	try:
 	    self.so_data.bind(self.local_address)
+	    self.so_data.listen(5)
 	except socket.error as e:
 	    raise GaVerError('Binding local Socket (%s) -> %s' %(self.local_address,str(e)))
 
@@ -125,7 +126,7 @@ class gv_socket(object):
 	    Accept Method
 	'''
 	try:
-	    self.gvapi.accept(self.local_address)
+	    haddr, port, vport = self.gvapi.accept(self.local_address)
 	except IOError as e:
 	    raise GaVerError('IOError: %s' % str(e))
 	except AttributeError as e:
